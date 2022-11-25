@@ -79,6 +79,7 @@ start:
     mov bx,0
     mov si,0
     mov ax, Score[1]
+    
     call output  
 exit:    
     mov ax, 4c00h
