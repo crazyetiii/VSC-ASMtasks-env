@@ -1,16 +1,17 @@
 ;实现50-AX，结果存在AX的功能
 DATA SEGMENT
 
-    Score      DW		0,81,77,62,32,89,85,74,34,92,100,63,45,59,76,83,88,95,92,86
-    Number     DW		0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+    Score      DW		81,77,62,32,89,85,74,34,92,100,63,45,59,76,83,88,95,92,86
+    Number     DW		1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
     Count      EQU		20  ;数组中元素的个数(字节)
-
+ORG 50H
+    DB 0
 ;***********************自己的数据写在下面*******************
 
 ;***********************自己的数据写在上面*******************
 DATA ENDS
-CODE SEGMENT
-	ASSUME CS: CODE, DS: DATA
+code segment
+	assume cs: code, ds: data
 
 output proc
 	push bx
@@ -86,30 +87,40 @@ I30:
 	;比较CX和DI大小:DI<CX转移,CX为外层循环总数n-1
 	JB  I20             ;不能退出，继续比较
 	Loop I10           ;循环调至I10,Loop循环CX执行一次减1
-
-
 MOV CX,19
 mov BX,0
-; mov DX,0
+XOR DX,DX
 print1:
-    mov ax,CX
-    CALL  output
-    mov dl,32;输出2个空格
-    int 21h;输出2个空格
-    ADD BX,2
+    MOV  AX, CX
+	NEG  AX;变成-AX
+	ADD AX, 20
+    ADD AX, AX
+    mov dx,Score[BX]
+    MOV  BX, AX
     MOV  AX, Number[BX]
     CALL  output
-    mov dl,32;输出2个空格
-    int 21h;输出2个空格
-    MOV  AX, Score[BX];需要为双数
+    mov dl,32
+    int 21h
+    MOV  AX, Score[BX]
     CALL  output
+    cmp dx,AX
+    mov dl,32
+    int 21h
+    je do_nothing
+    MOV  SI, 50H
+	MOV  AX, [SI]
+    add ax,1
+	MOV  [SI], ax;存回
+    
+    
+do_nothing:
 
+CALL  output
     MOV DL,0AH
     MOV AH,02H
     INT 21H
     Loop print1
-
-    MOV  AH, 4CH
+    mov ax,4c00h
     INT    21H
 CODE ENDS
     END START

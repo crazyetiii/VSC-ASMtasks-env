@@ -1,88 +1,59 @@
-DATAS SEGMENT
-    Score      DW		86,81,77,62,32,89,85,74,34,92,100,63,45,59,76,83,88,95,92,86
-    Number     DW		1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
-    Count      EQU		20  ;数组中元素的个数(字节)
-DATAS ENDS
+;本程序用于实现两个16位数相加结果存放其后的功能
 
-
+DATA SEGMENT
+;在这里写入你要使用的数据，没有或不会用就空着
+;***********************自己的数据写在下面*******************
+ORG 50H
+	DB 10
+;***********************自己的数据写在上面*******************
+DATA ENDS
 CODE SEGMENT
 	ASSUME CS: CODE, DS: DATA
-;代码段
-cseg segment 
-;把dl中的数字以十进制的形式打印在屏幕上
-; print_num_of_dl proc near
-;     push dx 
-;     xor  ah, ah 
-;     mov  al, dl 
-;     mov  dh, 10
-;     div  dh 
-;     ;除以10后商是否为0
-;     test al, 0ffh
-;     ;若为0，则代表原数为一位数
-;     jz   single
-;     ;商不为0，至少为两位数
-;     push ax 
-;     xor  ah, ah 
-;     div  dh 
-;     test al, 0ffh
-;     ;同理，若商为0，代表为两位数
-;     jz   two
-;     ;商为0时，余数不可能也为0，这样是个位数
-;     push ax 
-;     mov  dl, al 
-;     add  dl, '0'
-;     mov  ah, 02h 
-;     int  21h
-;     pop  ax 
-; two:
-;     mov  dl, ah 
-;     add  dl, '0'
-;     mov  ah, 02h
-;     int  21h
-;     pop  ax 
-; single:
-;     mov  dl, ah 
-;     add  dl, '0'
-;     mov  ah, 02h
-;     int  21h
-;     pop  dx
-;     ret
-; print_num_of_dl endp
+START:	MOV  AX, DATA
+	MOV  DS, AX
+;上面部分不要乱动
+;请在下面写你自己的代码
+;*************************自己的程序请写在下面********************
+	MOV  SI, 50H;偏移地址
+	MOV  AX, [SI];加数1
+	; ADD   SI, 2;指向下一个数
+	; ADD   AX, [SI];求和
+	; ADD   SI, 2;指向存和的位置
+	MOV  [SI], 3;存回
+    MOV  AX, [SI];加数1
 
 
-output proc;输出函数
-    mov bl,0
-    ; mov ax,NUM[si]
-L3: div cl
-    push ax;入栈
-    add bl,1;计数器加一
-    mov ah,0
-    cmp ax,0;当被除数为0时结束循环
-    jne L3
-L4: pop dx;出栈
-    sub bl,1;计数器减一
-    mov dl,dh
-    add dl,48
-    mov ah,2
-    int 21h
-    cmp bl,0;当计数器清零时结束循环
-    jne L4
-ret
-output endp 
-
-start:    
-    ;测试子程序功能
-    ; MOV AX,DATAS
-    
-    MOV DS,AX
-    mov cl,10
-    mov bx,0
-    mov si,0
-    mov ax, Score[1]
-    
-    call output  
-exit:    
-    mov ax, 4c00h
-    int 21h
-CODE ends
-end start 
+	
+;************************自己的程序请写在上面***************
+;如果想要显示结果，请用MOV指令把要显示的数据移入AX中即可，如MOV AX, 2000H
+;以下不要随意修改，你现在还不具备修改水平，乱改后果自负
+	CALL  HBDISP
+	MOV  AH, 4CH
+	INT    21H
+HBDISP PROC
+;本子程序用于显示存入AX中的16位数为十进制格式，方法为长除取余法
+	PUSH AX ;将所有寄存器内容送入堆栈保护
+	PUSH BX
+	PUSH CX
+	PUSH DX
+	MOV  BX, 10 ;用于存放除数10
+	XOR   CX, CX ;用于存放余数的个数
+AGN1:	XOR   DX, DX ;除法的高位，除完后存放的是余数，送入堆栈
+	DIV    BX ;除以10，商在AX，余数在DX
+	PUSH DX ;余数送堆栈
+	INC    CX; 余数的个数加1
+	AND  AX, AX; 判断商是否为0
+	JNZ   AGN1;如果不为0，继续除
+	MOV  AH, 2;调用显示余数
+AGN2:	POP   DX;将送入堆栈的余数取出
+	OR    DL, 30H;转换为字符
+	INT   21H;显示
+	LOOP AGN2;循环直至CX中计数值为0
+	POP  DX;返回调用子程序前的寄存器数据
+	POP  CX
+	POP  BX
+	POP  AX
+	RET
+HBDISP ENDP
+CODE ENDS
+	END START
