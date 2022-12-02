@@ -119,7 +119,7 @@ print1:
 	CALL  output
 	jmp tiaozhuan
 do_nothing:
-
+    CALL  output
     MOV  SI, 50H
 	MOV  AX, [SI]
     CALL  output
