@@ -110,7 +110,6 @@ print1:
 	cmp [SI],AX
 	JZ do_nothing
 	CALL  output
-	;这里每次都没有跳转，都执行了下面
     mov dl,32
     int 21h;第二个空格
     MOV  SI, 50H
@@ -118,10 +117,13 @@ print1:
     add ax,1
 	MOV  [SI], ax;存回
 	CALL  output
-    
-    
+	jmp tiaozhuan
 do_nothing:
-    
+
+    MOV  SI, 50H
+	MOV  AX, [SI]
+    CALL  output
+tiaozhuan:
     MOV DL,0AH
     MOV AH,02H
     INT 21H;回车
