@@ -93,7 +93,10 @@ print1:
 	NEG  AX;变成-AX
 	ADD AX, 20
     ADD AX, AX
-    MOV DX,Score[BX];存入上一次的成绩
+    ;MOV DX,Score[BX];存入上一次的成绩
+	MOV  SI, 30H
+	MOV DX,Score[BX]
+	MOV  [SI], DX;存回
     MOV  BX, AX
 	MOV  ax, DX
 	CALL  output
@@ -104,7 +107,7 @@ print1:
     mov dl,32
     int 21h;第一个空格
     MOV  AX, Score[BX];输出成绩，存入这一次的成绩
-	cmp dx,AX
+	cmp [SI],AX
 	JZ do_nothing
 	CALL  output
 	;这里每次都没有跳转，都执行了下面
