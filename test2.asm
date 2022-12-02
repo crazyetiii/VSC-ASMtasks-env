@@ -97,14 +97,17 @@ print1:
     MOV  BX, AX
 	MOV  ax, DX
 	CALL  output
+	mov dl,32
+    int 21h
     MOV  AX, Number[BX];输出编号
     CALL  output
     mov dl,32
     int 21h;第一个空格
     MOV  AX, Score[BX];输出成绩，存入这一次的成绩
-    CALL  output
-    cmp dx,AX
-	je do_nothing;这里每次都没有跳转，都执行了下面
+	cmp dx,AX
+	JZ do_nothing
+	CALL  output
+	;这里每次都没有跳转，都执行了下面
     mov dl,32
     int 21h;第二个空格
     MOV  SI, 50H
