@@ -1,7 +1,7 @@
 ;实现50-AX，结果存在AX的功能
 DATA SEGMENT
 
-    Score      DW		81,77,62,32,89,85,74,34,92,100,63,45,59,76,83,88,95,92,86
+    Score      DW		81,77,62,32,89,85,74,34,92,100,63,45,59,76,83,88,95,92,86,85
     Number     DW		1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
     Count      EQU		20  ;数组中元素的个数(字节)
 ORG 50H
@@ -62,12 +62,10 @@ I20:
 	MOV AX,Score[SI]
 	MOV BX,Score[SI+2]
 
-
 	CMP AX,BX
 	
 	;比较AX和BX大小:AX<BX，小于转移，跳转I30，不交换
-        ;比较AX和BX大小:AX>BX，大于，不跳转I30，交换
-        否则交换两数
+    ;比较AX和BX大小:AX>BX，大于，不跳转I30，交换
 	JL  I30
 	MOV Score[SI],BX
 	MOV Score[SI+2],AX     ;交换位置
@@ -95,30 +93,30 @@ print1:
 	NEG  AX;变成-AX
 	ADD AX, 20
     ADD AX, AX
-    mov dx,Score[BX]
+    MOV DX,Score[BX];存入上一次的成绩
     MOV  BX, AX
-    MOV  AX, Number[BX]
+    MOV  AX, Number[BX];输出编号
     CALL  output
     mov dl,32
-    int 21h
-    MOV  AX, Score[BX]
+    int 21h;第一个空格
+    MOV  AX, Score[BX];输出成绩，存入这一次的成绩
     CALL  output
-    cmp dx,AX
+    cmp dx,AX;上一次成绩和这一次成绩比较
+	je do_nothing;这里每次都没有跳转，都执行了下面
     mov dl,32
-    int 21h
-    je do_nothing
+    int 21h;第二个空格
     MOV  SI, 50H
 	MOV  AX, [SI]
     add ax,1
 	MOV  [SI], ax;存回
+	CALL  output
     
     
 do_nothing:
-
-CALL  output
+    
     MOV DL,0AH
     MOV AH,02H
-    INT 21H
+    INT 21H;回车
     Loop print1
     mov ax,4c00h
     INT    21H
