@@ -1,4 +1,4 @@
-ASSUME cs:codesg,ds:data
+assume cs:codesg,ds:data
 ;计算平均收入
 
 ;多个数组
@@ -23,50 +23,88 @@ table ends
 codesg SEGMENT
        ;
        start: mov  ax,data
-              mov  ds,ax
-              mov  bx,0
+              mov  es,ax
 
               mov  ax,table
-              mov  ss,ax
+              mov  ds,ax
+
+              mov  bp,0                          ;源偏移量
+              mov  bx,0                          ;目标偏移量
+
        ;循环次数
               mov  cx,21
-       s0:
+       s0:    
        ;[bx].idata[si]
        ;bx定位每个结构体数据,si定位每项中的值
               mov  cx,4
               mov  si,0
-       ;循环4次获取年份写入
-       s1:
-              mov  al,[bx].0[si]
+       ; ;循环4次获取【年份】写入
+       s1:    
+              mov  al,es:[bp+si]
        ;待写入的位置
-              mov  ss:[bx].0[si],al
+              mov  [bx][si],al
               inc  si
               loop s1
+
+              add  bx,16
+              add  bp,4                          ;目标偏移量
+              loop s0
+
+       ;【收入】
+              mov  cx,21
+              mov  bp,0                          ;源偏移量
+              mov  bx,0
        ;取2byte收入,然后赋值
               mov  si,0
        ;收入在偏移21byte开始
-              mov  ax,[bx].84[si]
+       s2:    mov  ax,es:84[bp][si]
        ;高双字节
-              mov  ss:[bx].5[si],ax
+              mov  [bx].5[si],ax
        ;低双字节
               add  si,2
-              mov  ax,[bx].84[si]
-              mov  ss:[bx].5[si],ax
+              mov  ax,es:84[bp][si]
+              mov  [bx].5[si],ax
 
-       ;人员在偏移105byte的位置,开始
-              mov  si,0
-              mov  ax,[bx].168[si]
-              mov  ss:[bx].10[si],ax
+              add  bx,16
+              add  bp,4                          ;目标偏移量
+              mov  si,0                          ;不重置导致位置错误
+              loop s2
+       ;【人员】
+              mov  cx,21
+              mov  bp,0                          ;源偏移量
+              mov  bx,0
 
+       ;人员在偏移168byte的位置,开始
+       s3:    mov  si,0
+              mov  ax,es:168[bp][si]
+              mov  [bx].10[si],ax
+              add  bx,16
+              add  bp,2                          ;目标偏移量
+              loop s3
+
+       ;【人均收入】
        ;收入,填写在d开头的两字节
        ;被除数,收入4字节,需要分开存储
+              mov  cx,21
+              mov  bp,0                          ;源偏移量
+              mov  bx,0
        ; mov ax,
+       s4:    mov  si,0
+              mov  ax,es:84[bp][si]              ;高字节收入
+              add  si,2
+              mov  DX,es:84[bp][si]              ;低字节收入
+
               mov  si,0
-              mov  dx,ss:[bx].7[si]
-              mov  ax,ss:[bx].5[si]
-              mov  cx,ss:[bx].10[si]
-              div  cx
-              mov  ss:[bx].0dh[si],ax
+       ; mov  bx,         ;人员
+       ; div  bx
+              div  word ptr es:168[bp][si]
+              mov  [bx].0dh[si],ax
+
+              add  bx,16
+              add  bp,4                          ;目标偏移量
+              loop s4
+
+
        ;exit
               mov  ax,4c00h
               int  21H
