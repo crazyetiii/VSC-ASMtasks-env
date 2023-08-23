@@ -23,7 +23,7 @@ set "boxconf=-conf %tool%\dosbox\dosbox-0.74.conf"
     if "%mode%" == "C" set Print=2
     if "%mode%" == "D" set Print=2
     ::improve the display resolution of dosbox
-    if "%Print%" == "0" set "boxconf=-conf %tool%\dosbox\bigbox.conf" 
+    if "%Print%" == "0" set "boxconf=-conf %tool%\dosbox\bigbox.conf"
 ::if "%Print%" == "2" goto preDo
 :OutputInfo
     echo Time:%time%
@@ -43,7 +43,8 @@ cd "%test%"
         if exist T.ASM del T.ASM
         copy "%file%" T.ASM>nul
         :core
-        start/min/wait "" "%dosbox%" %mcd% %boxconf% -c "asm/m %mode%"
+        @REM start/min/wait "" "%dosbox%" %mcd% %boxconf% -c "asm/m %mode%"
+        start/min "" "%dosbox%" %mcd% %boxconf% -c "asm/m %mode%"
             if "%Print%" == "1" goto print1
             if "%Print%" == "2" goto print2
             goto end
