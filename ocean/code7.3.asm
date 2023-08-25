@@ -8,7 +8,7 @@ datasg segment
 datasg ends
 
 codesg segment
-       ;1
+       ;1 .单字节拷贝
        ; start: mov  cx,16
        ;        mov  ax,datasg
        ;        mov  ds,ax
@@ -17,16 +17,37 @@ codesg segment
        ;        mov  16[bx],al
        ;        inc  bx
        ;        loop s
-       ;2
-       start: mov  cx,8
+
+
+       ;2. 双字节拷贝.源和目标各自使用一个偏移量
+       ; start:
+       ; ;次数
+       ;        mov  cx,8
+       ;        mov  ax,datasg
+       ;        mov  ds,ax
+       ; ;源字符串位置
+       ;        mov  si,0
+       ; ;目标字符串位置
+       ;        mov  di,16
+       ; ;双字节复制
+       ; s:     mov  ax,[si]
+       ;        mov  [di],ax
+       ;        add  si,2
+       ;        add  di,2
+       ;        loop s
+
+       ;3. 双字节拷贝.使用一个偏移量
+       start: 
+       ;次数
+              mov  cx,8
               mov  ax,datasg
               mov  ds,ax
+       ;源字符串位置
               mov  si,0
-              mov  di,16
+       ;双字节复制
        s:     mov  ax,[si]
-              mov  [di],ax
+              mov  16[si],ax
               add  si,2
-              add  di,2
               loop s
 
        ;退出
