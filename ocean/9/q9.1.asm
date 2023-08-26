@@ -3,7 +3,7 @@ ASSUME cs:codesg,ds:data
 
 
 data SEGMENT
-
+            db 2 dup (0)
 data ENDS
 
 codesg SEGMENT
